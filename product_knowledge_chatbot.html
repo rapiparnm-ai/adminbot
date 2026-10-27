@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrier Thailand - AI Product Assistant (Ver.27/10/26)</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Sarabun & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Sarabun', 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.03);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 antialiased select-none overflow-hidden bg-slate-50">
+
+  <!-- ================= TOP NAVIGATION / HEADER ================= -->
+  <header class="h-14 sm:h-16 bg-white border-b border-slate-200/80 px-3 sm:px-6 flex items-center justify-between shadow-xs shrink-0 z-30">
+    <!-- Brand / Title Section -->
+    <div class="flex items-center gap-2.5 sm:gap-3.5">
+      <!-- Carrier Logo Image -->
+      <a href="https://carrierthailand.com" target="_blank" rel="noopener noreferrer" class="flex items-center shrink-0 hover:opacity-90 transition">
+        <img 
+          src="https://lh3.googleusercontent.com/d/1Pe2rcyUlBZ-lZW-ppqlVc1SEis6yDetn" 
+          alt="Carrier Logo" 
+          class="h-7 sm:h-9 w-auto object-contain"
+          onerror="this.src='https://placehold.co/110x38/004b93/white?text=Carrier';"
+        />
+      </a>
+      
+      <div class="h-7 w-[1px] bg-slate-200 hidden sm:block"></div>
+
+      <!-- Mascot Avatar & Title -->
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border border-sky-200 bg-sky-50 shadow-2xs shrink-0">
+          <img 
+            src="https://lh3.googleusercontent.com/d/1BAdC9Wnd7qnjSnOvsOUrypK9ltY1efq3" 
+            alt="Cooly" 
+            class="w-full h-full object-cover"
+            onerror="this.src='https://placehold.co/80x80/004b93/white?text=Cooly';"
+          />
+        </div>
+        <div class="flex flex-col justify-center">
+          <h1 class="text-xs sm:text-sm font-bold text-slate-900 leading-tight">
+            AI ช่วยตอบคำถามเกี่ยวกับสินค้าแคเรียร์
+          </h1>
+          <p class="text-[10px] sm:text-[11px] text-[#004b93] font-medium leading-tight">
+            (ใช้เฉพาะภายในองค์กร Bgrim Carrier เท่านั้น)
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header Actions & User Profile -->
+    <div class="flex items-center gap-1.5 sm:gap-2">
+      <!-- Spec Database Button -->
+      <button 
+        onclick="toggleSheetModal(true)" 
+        class="h-8 sm:h-9 px-2.5 sm:px-3 bg-white hover:bg-sky-50 text-slate-700 hover:text-[#004b93] border border-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs"
+        title="ดูตารางสเปกสินค้าทั้งหมด"
+      >
+        <i data-lucide="table" class="w-3.5 h-3.5 text-sky-600"></i>
+        <span class="hidden md:inline">ฐานข้อมูลสเปก</span>
+      </button>
+
+      <!-- Admin Control Dropdown (Visible for Authorized Users) -->
+      <div id="adminDropdownContainer" class="relative hidden">
+        <button 
+          id="adminDropdownBtn"
+          onclick="toggleAdminMenu()" 
+          class="h-8 sm:h-9 px-2.5 sm:px-3 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs"
+        >
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-sky-400"></i>
+          <span class="hidden lg:inline">เมนูจัดการระบบ</span>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="adminDropdownMenu" class="hidden absolute right-0 mt-1.5 w-52 bg-white rounded-xl shadow-lg border border-slate-200 py-1 z-50 text-xs">
+          <button id="menuItemDb" onclick="openDbModal(); toggleAdminMenu();" class="w-full text-left px-3 py-2 hover:bg-sky-50 text-slate-700 hover:text-[#004b93] flex items-center gap-2">
+            <i data-lucide="database" class="w-3.5 h-3.5 text-sky-600"></i>
+            <span>จัดการฐานข้อมูล & แหล่งข้อมูล</span>
+          </button>
+          <button id="menuItemUsers" onclick="openUsersModal(); toggleAdminMenu();" class="w-full text-left px-3 py-2 hover:bg-sky-50 text-slate-700 hover:text-[#004b93] flex items-center gap-2">
+            <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i>
+            <span>จัดการผู้ใช้งาน & สิทธิ์</span>
+          </button>
+          <button id="menuItemLogs" onclick="openLogsModal(); toggleAdminMenu();" class="w-full text-left px-3 py-2 hover:bg-sky-50 text-slate-700 hover:text-[#004b93] flex items-center gap-2">
+            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-purple-600"></i>
+            <span>บันทึกการใช้งาน & อันดับ (Logs)</span>
+          </button>
+          <button id="menuItemTraining" onclick="openTrainingModal(); toggleAdminMenu();" class="w-full text-left px-3 py-2 hover:bg-sky-50 text-slate-700 hover:text-[#004b93] flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+            <span>เทรนแนวทางตอบ AI</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- User Profile Badge & Logout -->
+      <div id="userProfileBadge" class="flex items-center gap-1.5 pl-1.5 border-l border-slate-200">
+        <div id="userAvatarCircle" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs text-white shadow-2xs bg-slate-600">
+          U
+        </div>
+        <div class="hidden sm:flex flex-col text-left">
+          <span id="userEmailLabel" class="text-xs font-semibold text-slate-800 max-w-[110px] truncate leading-tight">user@carrier</span>
+          <span id="userRoleBadge" class="text-[9px] font-bold text-slate-500 leading-tight">Visitor</span>
+        </div>
+        <button onclick="handleLogout()" class="p-1.5 text-slate-400 hover:text-rose-600 transition rounded-lg hover:bg-rose-50" title="ออกจากระบบ">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= SUB-BAR: PURPOSE SWITCHER ================= -->
+  <div class="bg-white border-b border-slate-200/90 px-3 sm:px-6 py-2 flex items-center justify-between shrink-0 shadow-2xs">
+    <div class="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200/80 w-full sm:w-auto max-w-md">
+      <!-- Purpose 1: Chat & Specs -->
+      <button 
+        id="purposeBtnChat" 
+        onclick="switchPurpose('chat_specs')" 
+        class="flex-1 sm:flex-initial py-1.5 px-3.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-[#004b93] shadow-xs"
+      >
+        <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+        <span>1. สอบถามสินค้า / การใช้งาน</span>
+      </button>
+
+      <!-- Purpose 2: Files & Links Hub -->
+      <button 
+        id="purposeBtnFiles" 
+        onclick="switchPurpose('file_links')" 
+        class="flex-1 sm:flex-initial py-1.5 px-3.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5"
+      >
+        <i data-lucide="folder-search" class="w-3.5 h-3.5"></i>
+        <span>2. ค้นหาไฟล์ / ลิงก์ ต่างๆ</span>
+      </button>
+    </div>
+
+    <!-- Quick Status indicator -->
+    <div class="hidden md:flex items-center gap-2 text-[11px] text-slate-500">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span>ฐานข้อมูล Carrier พร้อมใช้งาน</span>
+      <span class="inline-flex items-center px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-mono font-semibold border border-slate-200">
+        Ver.27/10/26
+      </span>
+    </div>
+  </div>
+
+  <!-- ================= MAIN BODY CONTAINER ================= -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- LEFT / CENTER: PRIMARY CONTENT AREA -->
+    <main class="flex-1 flex flex-col bg-white overflow-hidden relative">
+
+      <!-- ================= MODE 1: CHAT VIEW ================= -->
+      <div id="chatInterfaceView" class="flex-1 flex flex-col overflow-hidden">
+        
+        <!-- Chat Scroll Area -->
+        <div id="chatMessages" class="flex-1 p-3 sm:p-5 overflow-y-auto space-y-4 custom-scrollbar">
+          
+          <!-- Welcome Message Bubble -->
+          <div class="flex items-start gap-2.5 max-w-2xl">
+            <div class="w-8 h-8 rounded-full overflow-hidden border border-sky-200 bg-sky-50 shadow-2xs shrink-0 mt-0.5">
+              <img 
+                src="https://lh3.googleusercontent.com/d/1BAdC9Wnd7qnjSnOvsOUrypK9ltY1efq3" 
+                alt="Cooly" 
+                class="w-full h-full object-cover"
+                onerror="this.src='https://placehold.co/80x80/004b93/white?text=Cooly';"
+              />
+            </div>
+            <div class="bg-slate-100/90 rounded-2xl rounded-tl-sm p-3.5 text-xs text-slate-800 leading-relaxed shadow-2xs border border-slate-200/60">
+              <p class="font-bold text-[#004b93] text-sm mb-1 flex items-center gap-1.5">
+                <span>สวัสดีครับ! ผมน้อง Cooly ผู้ช่วยสินค้าแคเรียร์</span>
+                <span class="text-[10px] font-normal px-1.5 py-0.5 rounded-md bg-sky-100 text-[#004b93]">พร้อมบริการ</span>
+              </p>
+              <p class="mb-2 text-slate-600">
+                สอบถามข้อมูลสเปกแอร์ รุ่น ขนาด BTU ฟังก์ชันประหยัดไฟ หรือขอข้อความสำเร็จรูปสำหรับส่งต่อให้ลูกค้าได้เลยครับ
+              </p>
+              <div class="text-[11px] text-slate-500 bg-white/70 p-2 rounded-lg border border-slate-200/50">
+                💡 <span class="font-semibold text-slate-700">ตัวอย่างคำถาม:</span> "Copper 11 มีกี่ BTU", "ห้อง 20 ตรม. ใช้รุ่นไหนดี", "XInverter Plus ฟอกอากาศยังไง"
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Chat Input Bar -->
+        <div class="p-2.5 sm:p-3.5 bg-white border-t border-slate-200 shrink-0">
+          <form id="chatForm" onsubmit="handleChatSubmit(event)" class="max-w-4xl mx-auto flex items-center gap-2">
+            <div class="relative flex-1">
+              <input 
+                type="text" 
+                id="chatInput" 
+                placeholder="พิมพ์ถามสเปก รุ่นแอร์ หรือขนาดห้องได้ที่นี่..."
+                class="w-full bg-slate-50 border border-slate-300 focus:border-[#004b93] focus:bg-white rounded-xl py-2 sm:py-2.5 pl-3.5 pr-10 text-xs sm:text-sm text-slate-800 outline-none transition shadow-2xs"
+                autocomplete="off"
+              />
+              <button 
+                type="button" 
+                onclick="clearChatInput()" 
+                id="clearInputBtn" 
+                class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <button 
+              type="submit" 
+              id="sendBtn"
+              class="h-9 sm:h-10 px-4 bg-[#004b93] hover:bg-[#003870] text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition shrink-0"
+            >
+              <span>ส่งคำถาม</span>
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+            </button>
+          </form>
+          <p class="text-[10px] text-center text-slate-400 mt-1.5">
+            ข้อมูลอ้างอิงจากฐานข้อมูลสเปกทางการของ บริษัท บี.กริม แคเรียร์ (ประเทศไทย) จำกัด
+          </p>
+        </div>
+
+      </div>
+
+      <!-- ================= MODE 2: RESOURCE DIRECTORY HUB (COMPACT & CLEAN) ================= -->
+      <div id="filesDirectoryHub" class="hidden flex-1 p-3 sm:p-5 overflow-y-auto space-y-3 custom-scrollbar bg-gradient-to-b from-sky-50/20 via-white to-slate-50">
+        
+        <!-- Compact Banner Intro -->
+        <div class="bg-gradient-to-r from-[#002f6c] via-[#004b93] to-[#0077c8] rounded-xl p-3 sm:p-4 text-white shadow-xs relative overflow-hidden flex items-center justify-between">
+          <div class="relative z-10">
+            <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/15 backdrop-blur-md text-[10px] font-semibold text-sky-100 mb-1">
+              <i data-lucide="folder-git-2" class="w-3 h-3 text-sky-300"></i>
+              <span>Carrier Official Assets & Media Hub</span>
+            </div>
+            <h2 class="text-sm sm:text-base font-bold tracking-tight">ศูนย์รวมไฟล์ เอกสาร และสื่อทางการแคเรียร์</h2>
+            <p class="text-[11px] text-sky-100/90 leading-tight">
+              คลิกเพื่อเปิดไปยังโฟลเดอร์ Google Drive หรือหน้าเว็บไซต์โดยตรง
+            </p>
+          </div>
+          <div class="opacity-15 hidden sm:block pointer-events-none pr-3">
+            <i data-lucide="folders" class="w-12 h-12 text-white"></i>
+          </div>
+        </div>
+
+        <!-- 4 Official Directories Grid (TIGHT & COMPACT) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          
+          <!-- Category 1: Catalog -->
+          <div class="bg-white rounded-xl border border-slate-200/90 p-3 hover:border-sky-400 hover:shadow-xs transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-lg bg-sky-50 text-[#004b93] border border-sky-200 flex items-center justify-center shrink-0">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-900 text-xs sm:text-sm">
+                    1. Catalog (แคตตาล็อก & โบรชัวร์)
+                  </h3>
+                </div>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-sky-50 text-[#004b93] border border-sky-100">Website</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-2 leading-relaxed">
+                ศูนย์ดาวน์โหลด E-Brochure และแคตตาล็อกรวมเครื่องปรับอากาศแคเรียร์ทุกซีรีส์
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100">
+              <a 
+                href="https://carrierthailand.com/e-brochures/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="flex-1 py-1.5 px-2 bg-[#004b93] hover:bg-[#003870] text-white font-semibold rounded-lg text-xs flex items-center justify-center gap-1 transition"
+              >
+                <span>เปิดดู Catalog</span>
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+              </a>
+              <button 
+                onclick="copyToClipboardText('https://carrierthailand.com/e-brochures/', this)" 
+                class="py-1.5 px-2.5 bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-[#004b93] border border-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1 transition shrink-0"
+              >
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span>คัดลอก</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Category 2: รูปสินค้า -->
+          <div class="bg-white rounded-xl border border-slate-200/90 p-3 hover:border-emerald-400 hover:shadow-xs transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center shrink-0">
+                    <i data-lucide="images" class="w-3.5 h-3.5"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-900 text-xs sm:text-sm">
+                    2. รูปสินค้า (Product Photos)
+                  </h3>
+                </div>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">Google Drive</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-2 leading-relaxed">
+                รูปภาพสินค้าสำหรับงานกราฟิกและสื่อออนไลน์
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100">
+              <a 
+                href="https://drive.google.com/drive/folders/1V1oVnQss_uVaWBrxK0BTYYrid5_Omy6D?usp=sharing" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="flex-1 py-1.5 px-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-xs flex items-center justify-center gap-1 transition"
+              >
+                <span>เปิดโฟลเดอร์รูป</span>
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+              </a>
+              <button 
+                onclick="copyToClipboardText('https://drive.google.com/drive/folders/1V1oVnQss_uVaWBrxK0BTYYrid5_Omy6D?usp=sharing', this)" 
+                class="py-1.5 px-2.5 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1 transition shrink-0"
+              >
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span>คัดลอก</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Category 3: Logo Carrier -->
+          <div class="bg-white rounded-xl border border-slate-200/90 p-3 hover:border-indigo-400 hover:shadow-xs transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center justify-center shrink-0">
+                    <i data-lucide="badge-check" class="w-3.5 h-3.5"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-900 text-xs sm:text-sm">
+                    3. Logo Carrier (แบรนด์หลัก)
+                  </h3>
+                </div>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">Google Drive</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-2 leading-relaxed">
+                ไฟล์โลโก้แคเรียร์ทางการ นามสกุล PNG, AI, Vector และคู่มือแบรนด์
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100">
+              <a 
+                href="https://drive.google.com/drive/folders/18d6tH3x-hhOyTCvmAsXlPJH1bndcsroA?usp=drive_link" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="flex-1 py-1.5 px-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-xs flex items-center justify-center gap-1 transition"
+              >
+                <span>เปิดโฟลเดอร์ Logo</span>
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+              </a>
+              <button 
+                onclick="copyToClipboardText('https://drive.google.com/drive/folders/18d6tH3x-hhOyTCvmAsXlPJH1bndcsroA?usp=drive_link', this)" 
+                class="py-1.5 px-2.5 bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1 transition shrink-0"
+              >
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span>คัดลอก</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Category 4: Logo สินค้า -->
+          <div class="bg-white rounded-xl border border-slate-200/90 p-3 hover:border-amber-400 hover:shadow-xs transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center shrink-0">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-900 text-xs sm:text-sm">
+                    4. Logo สินค้า (Product Logos)
+                  </h3>
+                </div>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-100">Google Drive</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-2 leading-relaxed">
+                โลโก้รุ่นผลิตภัณฑ์ เช่น Copper 11, XInverter Plus, Color Smart
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100">
+              <a 
+                href="https://drive.google.com/drive/folders/14tK1ShotPHRMV1LkmQaEEDl3p5CFiDtv?usp=drive_link" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="flex-1 py-1.5 px-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg text-xs flex items-center justify-center gap-1 transition"
+              >
+                <span>เปิดโฟลเดอร์ Logo</span>
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+              </a>
+              <button 
+                onclick="copyToClipboardText('https://drive.google.com/drive/folders/14tK1ShotPHRMV1LkmQaEEDl3p5CFiDtv?usp=drive_link', this)" 
+                class="py-1.5 px-2.5 bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-700 border border-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1 transition shrink-0"
+              >
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span>คัดลอก</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+    <!-- RIGHT SIDEBAR: QUICK PRODUCT SPECS / FILE LINKS -->
+    <aside class="w-80 bg-slate-50 border-l border-slate-200 hidden lg:flex flex-col shrink-0">
+      
+      <!-- Sidebar Header -->
+      <div class="p-3 border-b border-slate-200 bg-white">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="sidebarSearchInput" 
+            oninput="filterSidebarList(this.value)" 
+            placeholder="ค้นหารุ่น หรือคำสำคัญ..." 
+            class="w-full bg-slate-50 border border-slate-200 focus:border-[#004b93] rounded-lg py-1.5 pl-8 pr-3 text-xs outline-none transition"
+          />
+          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2"></i>
+        </div>
+      </div>
+
+      <!-- Quick List Body -->
+      <div id="quickProductsList" class="flex-1 overflow-y-auto p-2.5 space-y-1.5 custom-scrollbar text-xs">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="p-2.5 border-t border-slate-200 bg-white flex items-center justify-between text-[11px] text-slate-500">
+        <span id="quickListCount">กำลังโหลดข้อมูล...</span>
+        <button onclick="refreshSheetData()" class="hover:text-[#004b93] flex items-center gap-1 text-[11px] font-semibold">
+          <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+          <span>รีเฟรช</span>
+        </button>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ================= AUTH GATE MODAL (LOGIN & PIN) ================= -->
+  <div id="authGateModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border border-slate-100">
+      
+      <!-- Carrier Logo -->
+      <div class="flex justify-center mb-3">
+        <img 
+          src="https://lh3.googleusercontent.com/d/1Pe2rcyUlBZ-lZW-ppqlVc1SEis6yDetn" 
+          alt="Carrier Logo" 
+          class="h-10 w-auto object-contain"
+          onerror="this.src='https://placehold.co/120x40/004b93/white?text=Carrier';"
+        />
+      </div>
+
+      <!-- Cooly Mascot -->
+      <div class="w-20 h-20 mx-auto rounded-full overflow-hidden border-2 border-sky-200 bg-sky-50 shadow-md mb-3">
+        <img 
+          src="https://lh3.googleusercontent.com/d/1BAdC9Wnd7qnjSnOvsOUrypK9ltY1efq3" 
+          alt="Cooly" 
+          class="w-full h-full object-cover"
+          onerror="this.src='https://placehold.co/100x100/004b93/white?text=Cooly';"
+        />
+      </div>
+
+      <h2 class="text-base font-bold text-slate-900 mb-0.5">AI ช่วยตอบคำถามเกี่ยวกับสินค้าแคเรียร์</h2>
+      <p class="text-xs text-[#004b93] font-semibold mb-4">(ใช้เฉพาะภายในองค์กร Bgrim Carrier เท่านั้น)</p>
+
+      <form onsubmit="handleUserLogin(event)" class="space-y-3 text-left">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">อีเมลผู้ใช้งาน (@bgcarrier.co.th)</label>
+          <input 
+            type="email" 
+            id="loginEmailInput" 
+            oninput="checkIfSuperAdminEmail(this.value)"
+            placeholder="your.name@bgcarrier.co.th" 
+            required 
+            class="w-full bg-slate-50 border border-slate-300 focus:border-[#004b93] focus:bg-white rounded-xl p-2.5 text-xs outline-none transition"
+          />
+        </div>
+
+        <!-- PIN Box for Super Admin -->
+        <div id="adminPinField" class="hidden">
+          <label class="block text-[11px] font-bold text-amber-700 mb-1 flex items-center justify-between">
+            <span>รหัสยืนยัน PIN 4 หลัก (เฉพาะ Super Admin)</span>
+            <i data-lucide="key-round" class="w-3.5 h-3.5 text-amber-600"></i>
+          </label>
+          <input 
+            type="password" 
+            id="adminPinInput" 
+            maxlength="4" 
+            placeholder="••••" 
+            class="w-full bg-amber-50/50 border border-amber-300 focus:border-amber-500 rounded-xl p-2.5 text-xs text-center tracking-widest font-bold outline-none"
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full py-2.5 bg-[#004b93] hover:bg-[#003870] text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5"
+        >
+          <span>เข้าสู่ระบบ</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </form>
+
+      <p id="loginErrorMsg" class="hidden text-[11px] text-rose-600 font-semibold mt-2.5"></p>
+      
+      <p class="text-[10px] text-slate-400 mt-4 leading-tight">
+        เฉพาะอีเมลที่ได้รับการอนุมัติในระบบเท่านั้น<br>ติดต่อสอบถามการเข้าใช้งานได้ที่ Admin
+      </p>
+      <div class="mt-2 text-[9px] font-mono text-slate-400">
+        Build: Ver.27/10/26
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: SPECIFICATIONS TABLE ================= -->
+  <div id="tableModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-sky-100 text-[#004b93] flex items-center justify-center">
+            <i data-lucide="table" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-sm">ตารางข้อมูลสเปกสินค้าแคเรียร์</h3>
+            <p id="modalTableStats" class="text-[11px] text-slate-500">กำลังเชื่อมต่อฐานข้อมูล...</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <input 
+            type="text" 
+            id="modalSearchInput" 
+            oninput="filterModalTable(this.value)" 
+            placeholder="ค้นหาในตาราง..." 
+            class="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs outline-none focus:border-[#004b93] w-48"
+          />
+          <button onclick="toggleSheetModal(false)" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+      <div class="flex-1 overflow-auto custom-scrollbar p-2">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead id="modalTableHead" class="bg-slate-100 sticky top-0 border-b border-slate-200 text-slate-700 font-bold z-10"></thead>
+          <tbody id="modalTableBody" class="divide-y divide-slate-100 text-slate-600"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: DATABASE MANAGEMENT ================= -->
+  <div id="dbModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-2">
+          <i data-lucide="database" class="w-5 h-5 text-sky-600"></i>
+          <h3 class="font-bold text-slate-900 text-sm">บริหารจัดการแหล่งฐานข้อมูล & วัตถุประสงค์</h3>
+        </div>
+        <button onclick="closeDbModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="p-4 overflow-y-auto space-y-4 custom-scrollbar text-xs">
+        
+        <!-- Add Source Form -->
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+          <h4 class="font-bold text-slate-800">เพิ่มแหล่งข้อมูลใหม่ (Google Sheet / Website)</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input type="text" id="newSourceTitle" placeholder="ชื่อแหล่งข้อมูล (เช่น แคตตาล็อก 2026)" class="bg-white border border-slate-200 rounded-lg p-2 text-xs outline-none">
+            <select id="newSourcePurpose" class="bg-white border border-slate-200 rounded-lg p-2 text-xs outline-none">
+              <option value="chat_specs">สำหรับ: 1. สอบถามสินค้า / สเปก</option>
+              <option value="file_links">สำหรับ: 2. ค้นหาไฟล์ / ลิงก์</option>
+              <option value="both">ใช้ทั้งสองวัตถุประสงค์</option>
+            </select>
+          </div>
+          <input type="text" id="newSourceUrl" placeholder="วางลิงก์ Google Sheet URL หรือ Website URL" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs outline-none">
+          <button onclick="addNewSource()" class="w-full py-1.5 bg-[#004b93] hover:bg-[#003870] text-white font-semibold rounded-lg text-xs">เพิ่มแหล่งข้อมูล</button>
+        </div>
+
+        <!-- Sources List -->
+        <div>
+          <h4 class="font-bold text-slate-800 mb-2">รายการแหล่งข้อมูลทั้งหมด</h4>
+          <div id="sourcesListContainer" class="space-y-2"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: USERS & PERMISSIONS MANAGEMENT ================= -->
+  <div id="usersModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-2">
+          <i data-lucide="users" class="w-5 h-5 text-indigo-600"></i>
+          <div>
+            <h3 class="font-bold text-slate-900 text-sm">จัดการผู้ใช้งาน & ตำแหน่งสิทธิ์</h3>
+            <p class="text-[10px] text-slate-500">Visitor = 0 สิทธิ์ | Staff = ได้ 1-2 สิทธิ์ | Admin = ได้ครบทุกสิทธิ์</p>
+          </div>
+        </div>
+        <button onclick="closeUsersModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="p-4 overflow-y-auto space-y-4 custom-scrollbar text-xs">
+        
+        <!-- Add User Form -->
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex gap-2">
+          <input type="email" id="newUserEmailInput" placeholder="พิมพ์อีเมล เช่น somchai@bgcarrier.co.th" class="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-xs outline-none">
+          <button onclick="handleAddNewUser()" class="px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-xs shrink-0">เพิ่มผู้ใช้</button>
+        </div>
+
+        <!-- Users Table -->
+        <div class="border border-slate-200 rounded-xl overflow-hidden">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-100 font-bold text-slate-700 border-b border-slate-200">
+              <tr>
+                <th class="p-2.5">อีเมล</th>
+                <th class="p-2.5">ตำแหน่ง</th>
+                <th class="p-2.5 text-center">จัดการ DB</th>
+                <th class="p-2.5 text-center">จัดการ Email</th>
+                <th class="p-2.5 text-center">ดู Log</th>
+                <th class="p-2.5 text-center">ลบ</th>
+              </tr>
+            </thead>
+            <tbody id="usersListTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: USAGE LOGS & RANKINGS ================= -->
+  <div id="logsModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-2">
+          <i data-lucide="bar-chart-3" class="w-5 h-5 text-purple-600"></i>
+          <h3 class="font-bold text-slate-900 text-sm">บันทึกการใช้งาน & การจัดอันดับ (Usage Logs)</h3>
+        </div>
+        <button onclick="closeLogsModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="p-4 overflow-y-auto space-y-3 custom-scrollbar text-xs">
+        <div id="logsStatsContainer" class="grid grid-cols-3 gap-2 text-center"></div>
+        <div class="border border-slate-200 rounded-xl overflow-hidden">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-100 font-bold text-slate-700 border-b border-slate-200">
+              <tr>
+                <th class="p-2">อันดับ</th>
+                <th class="p-2">อีเมล</th>
+                <th class="p-2 text-center">เวลาใช้งาน</th>
+                <th class="p-2 text-center">คำถาม</th>
+              </tr>
+            </thead>
+            <tbody id="logsTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: AI TRAINING DIRECTIVES ================= -->
+  <div id="trainingModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white rounded-2xl w-full max-w-xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>
+          <h3 class="font-bold text-slate-900 text-sm">เทรนแนวทางการตอบคำถาม AI (Super Admin)</h3>
+        </div>
+        <button onclick="closeTrainingModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="p-4 overflow-y-auto space-y-3 custom-scrollbar text-xs">
+        <label class="block font-bold text-slate-700">คำสั่งและแนวทางตอบคำถามเฉพาะทาง (Custom Directives)</label>
+        <textarea id="aiTrainingDirectivesInput" rows="5" placeholder="เช่น เน้นย้ำเรื่องคอยล์ทองแดงทนทาน, ตอบด้วยภาษาที่สุภาพและกระชับ..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-[#004b93]"></textarea>
+        <button onclick="saveAiTrainingDirectives()" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition">บันทึกแนวทางตอบ AI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    // System Constants & Version Tracker
+    const APP_VERSION = "Ver.27/10/26";
+    const SUPER_ADMIN_EMAIL = "rapiparnm@bgcarrier.co.th";
+    const SUPER_ADMIN_PIN = "2301";
+    const AUTH_SHEET_CSV = "https://docs.google.com/spreadsheets/d/19LswSI_n-nH9bWr1Y3TtWIUFxsg-gUkowcgYavP78n8/export?format=csv&gid=0";
+    const SPEC_FALLBACK_URL = "https://carrierthailand.com/";
+
+    // Application State
+    let currentUser = null;
+    let currentPurpose = 'chat_specs'; // 'chat_specs' or 'file_links'
+    let allowedEmails = [SUPER_ADMIN_EMAIL];
+    let usersList = [
+      { email: SUPER_ADMIN_EMAIL, can_db: true, can_users: true, can_logs: true }
+    ];
+    let knowledgeSources = [
+      { id: 'src_1', title: 'Carrier Specs Catalog (Main)', type: 'website', url: 'https://carrierthailand.com/e-brochures/', purpose: 'both', active: true },
+      { id: 'src_2', title: 'Carrier Product Photos Drive', type: 'drive', url: 'https://drive.google.com/drive/folders/1V1oVnQss_uVaWBrxK0BTYYrid5_Omy6D?usp=sharing', purpose: 'file_links', active: true },
+      { id: 'src_3', title: 'Carrier Brand Logo Drive', type: 'drive', url: 'https://drive.google.com/drive/folders/18d6tH3x-hhOyTCvmAsXlPJH1bndcsroA?usp=drive_link', purpose: 'file_links', active: true },
+      { id: 'src_4', title: 'Product Series Logo Drive', type: 'drive', url: 'https://drive.google.com/drive/folders/14tK1ShotPHRMV1LkmQaEEDl3p5CFiDtv?usp=drive_link', purpose: 'file_links', active: true }
+    ];
+    let productSpecs = [
+      { series: "Copper 11", btu: "9,200 - 25,200 BTU", feature: "คอยล์ทองแดงแท้ 100%, ทำความสะอาดตัวเอง, ประหยัดไฟเบอร์ 5", warranty: "คอมเพรสเซอร์ 10 ปี / อะไหล่ 5 ปี" },
+      { series: "XInverter Plus", btu: "9,200 - 25,200 BTU", feature: "ระบบฟอกอากาศ X-IONIZER ดักจับ PM2.5, สั่งการผ่าน Wi-Fi", warranty: "คอมเพรสเซอร์ 10 ปี / อะไหล่ 5 ปี" },
+      { series: "Color Smart", btu: "9,200 - 25,200 BTU", feature: "เปลี่ยนหน้ากากผ้าได้ตามต้องการ, Wi-Fi สั่งการด้วยเสียง", warranty: "คอมเพรสเซอร์ 10 ปี / อะไหล่ 5 ปี" },
+      { series: "Ion Strike", btu: "9,200 - 25,200 BTU", feature: "ประหยัดไฟสูงสุด เบอร์ 5 สูงสุด 3 ดาว, ระบบปล่อยประจุไอออน", warranty: "คอมเพรสเซอร์ 10 ปี / อะไหล่ 5 ปี" }
+    ];
+    let usageLogs = {};
+    let customAiDirectives = "เน้นย้ำจุดขายเรื่องความทนทานของคอยล์ทองแดง และความคุ้มค่าของการรับประกัน";
+
+    // Initialize Application
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      fetchAllowedEmailsFromSheet();
+      loadStoredSession();
+      renderQuickProductsList();
+    });
+
+    // 1. Fetch Authorized Emails from Sheet Column B
+    async function fetchAllowedEmailsFromSheet() {
+      try {
+        const res = await fetch(AUTH_SHEET_CSV);
+        if (!res.ok) return;
+        const text = await res.text();
+        const rows = text.split('\n');
+        
+        // Scan Column B (Index 1)
+        rows.forEach((row, idx) => {
+          if (idx === 0) return; // skip header
+          const cols = row.split(',');
+          if (cols[1]) {
+            const email = cols[1].trim().toLowerCase();
+            if (email && email.includes('@') && !allowedEmails.includes(email)) {
+              allowedEmails.push(email);
+              if (!usersList.some(u => u.email === email)) {
+                usersList.push({ email, can_db: false, can_users: false, can_logs: false });
+              }
+            }
+          }
+        });
+      } catch (e) {
+        console.warn("Using default email list:", e);
+      }
+    }
+
+    // 2. Authentication Logic
+    function checkIfSuperAdminEmail(email) {
+      const pinField = document.getElementById('adminPinField');
+      if (email.trim().toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
+        pinField.classList.remove('hidden');
+      } else {
+        pinField.classList.add('hidden');
+      }
+    }
+
+    function handleUserLogin(e) {
+      e.preventDefault();
+      const emailInput = document.getElementById('loginEmailInput').value.trim().toLowerCase();
+      const pinInput = document.getElementById('adminPinInput').value.trim();
+      const errorMsg = document.getElementById('loginErrorMsg');
+
+      // Check Super Admin
+      if (emailInput === SUPER_ADMIN_EMAIL.toLowerCase()) {
+        if (pinInput !== SUPER_ADMIN_PIN) {
+          errorMsg.textContent = "รหัสยืนยัน PIN 4 หลักไม่ถูกต้อง";
+          errorMsg.classList.remove('hidden');
+          return;
+        }
+        loginSuccess(emailInput, true);
+        return;
+      }
+
+      // Check Allowed Whitelist
+      if (allowedEmails.includes(emailInput)) {
+        loginSuccess(emailInput, false);
+      } else {
+        errorMsg.textContent = "อีเมลนี้ยังไม่ได้รับสิทธิ์เข้าใช้งาน กรุณาติดต่อ Admin ครับ";
+        errorMsg.classList.remove('hidden');
+      }
+    }
+
+    function loginSuccess(email, isSuperAdmin) {
+      currentUser = {
+        email: email,
+        isSuperAdmin: isSuperAdmin,
+        loginTime: Date.now()
+      };
+      
+      sessionStorage.setItem('carrier_user', JSON.stringify(currentUser));
+      document.getElementById('authGateModal').classList.add('hidden');
+      
+      // Init user stats
+      if (!usageLogs[email]) {
+        usageLogs[email] = { activeSeconds: 0, queryCount: 0, lastActive: Date.now() };
+      }
+      
+      updateUserInterface();
+      startHeartbeat();
+    }
+
+    function loadStoredSession() {
+      const stored = sessionStorage.getItem('carrier_user');
+      if (stored) {
+        try {
+          currentUser = JSON.parse(stored);
+          document.getElementById('authGateModal').classList.add('hidden');
+          updateUserInterface();
+          startHeartbeat();
+        } catch(e) {
+          currentUser = null;
+        }
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('carrier_user');
+      currentUser = null;
+      location.reload();
+    }
+
+    // 3. User Role & Header UI Updates
+    function calculateUserRole(email) {
+      if (email === SUPER_ADMIN_EMAIL.toLowerCase()) return { title: "Admin", style: "bg-blue-100 text-[#004b93]" };
+      const user = usersList.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (!user) return { title: "Visitor", style: "bg-slate-100 text-slate-600" };
+      
+      const permissionsCount = (user.can_db ? 1 : 0) + (user.can_users ? 1 : 0) + (user.can_logs ? 1 : 0);
+      if (permissionsCount === 3) return { title: "Admin", style: "bg-blue-100 text-[#004b93]" };
+      if (permissionsCount >= 1) return { title: "Staff", style: "bg-emerald-100 text-emerald-800" };
+      return { title: "Visitor", style: "bg-slate-100 text-slate-600" };
+    }
+
+    function getUserColor(str) {
+      const colors = ['#0284c7', '#0d9488', '#16a34a', '#d97706', '#9333ea', '#e11d48', '#4f46e5'];
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      return colors[Math.abs(hash) % colors.length];
+    }
+
+    function updateUserInterface() {
+      if (!currentUser) return;
+      
+      const email = currentUser.email;
+      const initial = email.charAt(0).toUpperCase();
+      const role = calculateUserRole(email);
+      
+      // User Avatar Circle
+      const avatarCircle = document.getElementById('userAvatarCircle');
+      avatarCircle.textContent = initial;
+      avatarCircle.style.backgroundColor = getUserColor(email);
+      
+      // Email & Role Label
+      document.getElementById('userEmailLabel').textContent = email;
+      const roleBadge = document.getElementById('userRoleBadge');
+      roleBadge.textContent = role.title;
+      roleBadge.className = `text-[9px] font-bold px-1.5 py-0.2 rounded ${role.style}`;
+
+      // Admin Tools Access
+      const userObj = usersList.find(u => u.email.toLowerCase() === email.toLowerCase()) || {};
+      const canDb = currentUser.isSuperAdmin || userObj.can_db;
+      const canUsers = currentUser.isSuperAdmin || userObj.can_users;
+      const canLogs = currentUser.isSuperAdmin || userObj.can_logs;
+      const canTrain = currentUser.isSuperAdmin;
+
+      const adminContainer = document.getElementById('adminDropdownContainer');
+      if (canDb || canUsers || canLogs || canTrain) {
+        adminContainer.classList.remove('hidden');
+        document.getElementById('menuItemDb').style.display = canDb ? 'flex' : 'none';
+        document.getElementById('menuItemUsers').style.display = canUsers ? 'flex' : 'none';
+        document.getElementById('menuItemLogs').style.display = canLogs ? 'flex' : 'none';
+        document.getElementById('menuItemTraining').style.display = canTrain ? 'flex' : 'none';
+      } else {
+        adminContainer.classList.add('hidden');
+      }
+    }
+
+    function toggleAdminMenu() {
+      const menu = document.getElementById('adminDropdownMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // 4. Purpose Switcher (Chat vs Files Hub)
+    function switchPurpose(purpose) {
+      currentPurpose = purpose;
+      const chatBtn = document.getElementById('purposeBtnChat');
+      const filesBtn = document.getElementById('purposeBtnFiles');
+      const chatView = document.getElementById('chatInterfaceView');
+      const filesView = document.getElementById('filesDirectoryHub');
+
+      if (purpose === 'chat_specs') {
+        chatBtn.className = "flex-1 sm:flex-initial py-1.5 px-3.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-[#004b93] shadow-xs";
+        filesBtn.className = "flex-1 sm:flex-initial py-1.5 px-3.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5";
+        chatView.classList.remove('hidden');
+        filesView.classList.add('hidden');
+      } else {
+        filesBtn.className = "flex-1 sm:flex-initial py-1.5 px-3.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-[#004b93] shadow-xs";
+        chatBtn.className = "flex-1 sm:flex-initial py-1.5 px-3.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5";
+        chatView.classList.add('hidden');
+        filesView.classList.remove('hidden');
+      }
+      renderQuickProductsList();
+    }
+
+    // 5. Chat Interaction Logic
+    function handleChatSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      if (currentUser && usageLogs[currentUser.email]) {
+        usageLogs[currentUser.email].queryCount++;
+      }
+
+      appendUserMessage(query);
+      input.value = '';
+
+      // Simulate Intelligent Cooly Response
+      setTimeout(() => {
+        generateCoolyResponse(query);
+      }, 500);
+    }
+
+    function appendUserMessage(text) {
+      const container = document.getElementById('chatMessages');
+      const initial = currentUser ? currentUser.email.charAt(0).toUpperCase() : 'U';
+      const color = currentUser ? getUserColor(currentUser.email) : '#0284c7';
+
+      const div = document.createElement('div');
+      div.className = "flex items-start justify-end gap-2.5 max-w-2xl ml-auto";
+      div.innerHTML = `
+        <div class="bg-[#004b93] text-white rounded-2xl rounded-tr-sm p-3 text-xs leading-relaxed shadow-2xs">
+          ${escapeHtml(text)}
+        </div>
+        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs text-white shadow-2xs shrink-0 mt-0.5" style="background-color: ${color}">
+          ${initial}
+        </div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function generateCoolyResponse(query) {
+      const container = document.getElementById('chatMessages');
+      const lower = query.toLowerCase();
+      
+      let replyContent = "";
+      
+      if (lower.includes("copper") || lower.includes("คอปเปอร์")) {
+        replyContent = `รุ่น **Copper 11** โดดเด่นด้วยคอยล์ทองแดงแท้ 100% ทนทานต่อการกัดกร่อน มีระบบทำความสะอาดตัวเองอัตโนมัติ Self Cleaning และประหยัดไฟเบอร์ 5 ครับ<br><br>
+        • ขนาด: 9,200 - 25,200 BTU<br>
+        • การรับประกัน: คอมเพรสเซอร์ 10 ปี / อะไหล่ทุกชิ้นส่วน 5 ปี`;
+      } else if (lower.includes("xinverter") || lower.includes("เอ็กซ์อินเวอร์เตอร์") || lower.includes("ฟอกอากาศ")) {
+        replyContent = `รุ่น **XInverter Plus** มาพร้อมเทคโนโลยีฟอกอากาศ **X-IONIZER** ช่วยดักจับฝุ่น PM 2.5 และเชื้อแบคทีเรีย พร้อมระบบ Wi-Fi เชื่อมต่อสั่งการผ่านสมาร์ตโฟนได้ทุกที่ครับ<br><br>
+        • ขนาด: 9,200 - 25,200 BTU<br>
+        • การรับประกัน: คอมเพรสเซอร์ 10 ปี / อะไหล่ 5 ปี`;
+      } else {
+        replyContent = `ขอแนะนำเครื่องปรับอากาศแคเรียร์ระบบ Inverter ประหยัดไฟเบอร์ 5 พร้อมคอยล์ทองแดงทนทาน และรับประกันคอมเพรสเซอร์ยาวนาน 10 ปีครับ สามารถเลือกดูรุ่นยอดนิยมได้จากแถบด้านขวาครับ`;
+      }
+
+      // Always append closing recommendation as instructed
+      const customerDraft = `เรียน คุณลูกค้าครับ ขอแนะนำข้อมูลผลิตภัณฑ์เครื่องปรับอากาศ Carrier ครับ ทั้งนี้สามารถดูรายละเอียดและแคตตาล็อกเพิ่มเติมได้ที่เว็บไซต์ทางการ https://carrierthailand.com/ ครับ`;
+
+      const div = document.createElement('div');
+      div.className = "flex items-start gap-2.5 max-w-2xl";
+      div.innerHTML = `
+        <div class="w-8 h-8 rounded-full overflow-hidden border border-sky-200 bg-sky-50 shadow-2xs shrink-0 mt-0.5">
+          <img src="https://lh3.googleusercontent.com/d/1BAdC9Wnd7qnjSnOvsOUrypK9ltY1efq3" alt="Cooly" class="w-full h-full object-cover">
+        </div>
+        <div class="bg-slate-100 rounded-2xl rounded-tl-sm p-3.5 text-xs text-slate-800 leading-relaxed shadow-2xs border border-slate-200/60 w-full">
+          <div class="font-bold text-[#004b93] text-xs mb-1.5 flex items-center justify-between">
+            <span>น้อง Cooly</span>
+            <span class="text-[10px] text-slate-400 font-normal">${new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'})}</span>
+          </div>
+          <div class="text-slate-700 mb-3">${replyContent}</div>
+          
+          <!-- Prepared response for customer -->
+          <div class="bg-white p-2.5 rounded-xl border border-sky-100 shadow-2xs">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] font-bold text-sky-700">ข้อความสำหรับส่งตอบลูกค้า:</span>
+              <button onclick="copyToClipboardText('${customerDraft.replace(/'/g, "\\'")}', this)" class="text-[10px] font-bold text-[#004b93] hover:underline flex items-center gap-1">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span>คัดลอกข้อความ</span>
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-600 italic leading-snug">${customerDraft}</p>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+      lucide.createIcons();
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // 6. Sidebar Quick List
+    function renderQuickProductsList(filterText = '') {
+      const container = document.getElementById('quickProductsList');
+      const countLabel = document.getElementById('quickListCount');
+      container.innerHTML = '';
+
+      if (currentPurpose === 'chat_specs') {
+        const filtered = productSpecs.filter(p => p.series.toLowerCase().includes(filterText.toLowerCase()) || p.feature.toLowerCase().includes(filterText.toLowerCase()));
+        countLabel.textContent = `ทั้งหมด ${filtered.length} รุ่น`;
+
+        filtered.forEach(p => {
+          const card = document.createElement('div');
+          card.className = "p-2.5 bg-white rounded-xl border border-slate-200 hover:border-sky-300 transition shadow-2xs cursor-pointer";
+          card.onclick = () => {
+            document.getElementById('chatInput').value = `ขอสเปกของรุ่น ${p.series}`;
+            handleChatSubmit(new Event('submit'));
+          };
+          card.innerHTML = `
+            <div class="flex items-center justify-between font-bold text-slate-900 text-xs mb-1">
+              <span>${p.series}</span>
+              <span class="text-[10px] text-sky-700 font-normal bg-sky-50 px-1.5 py-0.2 rounded">${p.btu}</span>
+            </div>
+            <p class="text-[11px] text-slate-500 leading-tight line-clamp-2">${p.feature}</p>
+          `;
+          container.appendChild(card);
+        });
+      } else {
+        const categories = [
+          { title: "1. Catalog", desc: "แคตตาล็อก & E-Brochure", url: "https://carrierthailand.com/e-brochures/" },
+          { title: "2. รูปสินค้า", desc: "โฟลเดอร์รูปภาพสินค้าทางการ", url: "https://drive.google.com/drive/folders/1V1oVnQss_uVaWBrxK0BTYYrid5_Omy6D?usp=sharing" },
+          { title: "3. Logo Carrier", desc: "ไฟล์โลโก้แบรนด์หลัก", url: "https://drive.google.com/drive/folders/18d6tH3x-hhOyTCvmAsXlPJH1bndcsroA?usp=drive_link" },
+          { title: "4. Logo สินค้า", desc: "โลโก้รุ่นและซีรีส์แอร์", url: "https://drive.google.com/drive/folders/14tK1ShotPHRMV1LkmQaEEDl3p5CFiDtv?usp=drive_link" }
+        ];
+        countLabel.textContent = `4 หมวดหมู่หลัก`;
+
+        categories.forEach(c => {
+          const card = document.createElement('div');
+          card.className = "p-2.5 bg-white rounded-xl border border-slate-200 hover:border-sky-300 transition shadow-2xs";
+          card.innerHTML = `
+            <div class="font-bold text-slate-900 text-xs mb-0.5">${c.title}</div>
+            <p class="text-[11px] text-slate-500 mb-2 leading-tight">${c.desc}</p>
+            <div class="flex items-center gap-1.5">
+              <a href="${c.url}" target="_blank" class="flex-1 py-1 px-2 bg-[#004b93] text-white text-[10px] font-semibold rounded text-center">เปิด</a>
+              <button onclick="copyToClipboardText('${c.url}', this)" class="py-1 px-2 bg-slate-100 text-slate-700 text-[10px] font-semibold rounded">คัดลอก</button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+    }
+
+    function filterSidebarList(val) {
+      renderQuickProductsList(val);
+    }
+
+    // 7. Modals Open/Close
+    function toggleSheetModal(show) {
+      const modal = document.getElementById('tableModal');
+      modal.classList.toggle('hidden', !show);
+      if (show) renderModalTable();
+    }
+
+    function renderModalTable(filterText = '') {
+      const thead = document.getElementById('modalTableHead');
+      const tbody = document.getElementById('modalTableBody');
+      const stats = document.getElementById('modalTableStats');
+
+      thead.innerHTML = `
+        <tr>
+          <th class="p-3">ซีรีส์ / รุ่น</th>
+          <th class="p-3">ช่วงขนาด BTU</th>
+          <th class="p-3">คุณสมบัติเด่น</th>
+          <th class="p-3">การรับประกัน</th>
+        </tr>
+      `;
+
+      const filtered = productSpecs.filter(p => 
+        p.series.toLowerCase().includes(filterText.toLowerCase()) || 
+        p.feature.toLowerCase().includes(filterText.toLowerCase())
+      );
+
+      stats.textContent = `แสดง ${filtered.length} จากทั้งหมด ${productSpecs.length} รายการ`;
+      tbody.innerHTML = '';
+
+      filtered.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+        tr.innerHTML = `
+          <td class="p-3 font-bold text-slate-900">${p.series}</td>
+          <td class="p-3 text-sky-800 font-medium">${p.btu}</td>
+          <td class="p-3 text-slate-600 leading-relaxed">${p.feature}</td>
+          <td class="p-3 text-slate-500">${p.warranty}</td>
+        </tr>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterModalTable(val) {
+      renderModalTable(val);
+    }
+
+    // Database Modal
+    function openDbModal() {
+      renderSourcesList();
+      document.getElementById('dbModal').classList.remove('hidden');
+    }
+    function closeDbModal() {
+      document.getElementById('dbModal').classList.add('hidden');
+    }
+
+    function renderSourcesList() {
+      const container = document.getElementById('sourcesListContainer');
+      container.innerHTML = '';
+
+      knowledgeSources.forEach(s => {
+        const div = document.createElement('div');
+        div.className = "p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-2";
+        div.innerHTML = `
+          <div class="flex-1 min-w-0">
+            <div class="font-bold text-slate-800 text-xs truncate">${s.title}</div>
+            <div class="text-[10px] text-slate-500 truncate">${s.url}</div>
+          </div>
+          <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${s.purpose === 'chat_specs' ? 'bg-sky-100 text-sky-800' : 'bg-emerald-100 text-emerald-800'}">
+            ${s.purpose === 'chat_specs' ? 'สเปก' : s.purpose === 'file_links' ? 'ไฟล์' : 'ทั้งสอง'}
+          </span>
+          <button onclick="deleteSource('${s.id}')" class="text-slate-400 hover:text-rose-600 p-1">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+        `;
+        container.appendChild(div);
+      });
+      lucide.createIcons();
+    }
+
+    function addNewSource() {
+      const title = document.getElementById('newSourceTitle').value.trim();
+      const url = document.getElementById('newSourceUrl').value.trim();
+      const purpose = document.getElementById('newSourcePurpose').value;
+
+      if (!title || !url) return;
+      knowledgeSources.push({
+        id: 'src_' + Date.now(),
+        title,
+        type: url.includes('drive.google') ? 'drive' : 'website',
+        url,
+        purpose,
+        active: true
+      });
+
+      document.getElementById('newSourceTitle').value = '';
+      document.getElementById('newSourceUrl').value = '';
+      renderSourcesList();
+    }
+
+    function deleteSource(id) {
+      knowledgeSources = knowledgeSources.filter(s => s.id !== id);
+      renderSourcesList();
+    }
+
+    // Users Modal
+    function openUsersModal() {
+      renderUsersTable();
+      document.getElementById('usersModal').classList.remove('hidden');
+    }
+    function closeUsersModal() {
+      document.getElementById('usersModal').classList.add('hidden');
+    }
+
+    function renderUsersTable() {
+      const tbody = document.getElementById('usersListTableBody');
+      tbody.innerHTML = '';
+
+      usersList.forEach(u => {
+        const isSuper = u.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+        const role = calculateUserRole(u.email);
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50";
+        tr.innerHTML = `
+          <td class="p-2.5 font-medium text-slate-800">${u.email}</td>
+          <td class="p-2.5"><span class="px-1.5 py-0.5 text-[9px] font-bold rounded ${role.style}">${role.title}</span></td>
+          <td class="p-2.5 text-center">
+            <input type="checkbox" ${u.can_db || isSuper ? 'checked' : ''} ${isSuper ? 'disabled' : ''} onchange="togglePerm('${u.email}', 'can_db', this.checked)">
+          </td>
+          <td class="p-2.5 text-center">
+            <input type="checkbox" ${u.can_users || isSuper ? 'checked' : ''} ${isSuper ? 'disabled' : ''} onchange="togglePerm('${u.email}', 'can_users', this.checked)">
+          </td>
+          <td class="p-2.5 text-center">
+            <input type="checkbox" ${u.can_logs || isSuper ? 'checked' : ''} ${isSuper ? 'disabled' : ''} onchange="togglePerm('${u.email}', 'can_logs', this.checked)">
+          </td>
+          <td class="p-2.5 text-center">
+            ${!isSuper ? `<button onclick="deleteUser('${u.email}')" class="text-slate-400 hover:text-rose-600"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>` : '-'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      lucide.createIcons();
+    }
+
+    function togglePerm(email, perm, val) {
+      const u = usersList.find(x => x.email.toLowerCase() === email.toLowerCase());
+      if (u) {
+        u[perm] = val;
+        renderUsersTable();
+        updateUserInterface();
+      }
+    }
+
+    function handleAddNewUser() {
+      const input = document.getElementById('newUserEmailInput');
+      const email = input.value.trim().toLowerCase();
+      if (!email || !email.includes('@')) return;
+
+      if (!usersList.some(u => u.email.toLowerCase() === email)) {
+        usersList.push({ email, can_db: false, can_users: false, can_logs: false });
+        if (!allowedEmails.includes(email)) allowedEmails.push(email);
+        input.value = '';
+        renderUsersTable();
+      }
+    }
+
+    function deleteUser(email) {
+      usersList = usersList.filter(u => u.email.toLowerCase() !== email.toLowerCase());
+      allowedEmails = allowedEmails.filter(e => e.toLowerCase() !== email.toLowerCase());
+      renderUsersTable();
+    }
+
+    // Logs Modal
+    function openLogsModal() {
+      renderLogsData();
+      document.getElementById('logsModal').classList.remove('hidden');
+    }
+    function closeLogsModal() {
+      document.getElementById('logsModal').classList.add('hidden');
+    }
+
+    function renderLogsData() {
+      const stats = document.getElementById('logsStatsContainer');
+      const tbody = document.getElementById('logsTableBody');
+
+      const userEntries = Object.entries(usageLogs);
+      const totalUsers = userEntries.length;
+      const totalQueries = userEntries.reduce((sum, [, data]) => sum + data.queryCount, 0);
+
+      stats.innerHTML = `
+        <div class="p-2 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="text-[10px] text-slate-500">ผู้ใช้ทั้งหมด</div>
+          <div class="text-sm font-bold text-slate-900">${totalUsers}</div>
+        </div>
+        <div class="p-2 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="text-[10px] text-slate-500">คำถามทั้งหมด</div>
+          <div class="text-sm font-bold text-[#004b93]">${totalQueries}</div>
+        </div>
+        <div class="p-2 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="text-[10px] text-slate-500">สถานะระบบ</div>
+          <div class="text-sm font-bold text-emerald-600">Active</div>
+        </div>
+      `;
+
+      tbody.innerHTML = '';
+      userEntries.sort((a, b) => b[1].activeSeconds - a[1].activeSeconds).forEach(([email, data], idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-2 font-bold text-slate-700">#${idx + 1}</td>
+          <td class="p-2 text-slate-800">${email}</td>
+          <td class="p-2 text-center text-slate-600">${Math.floor(data.activeSeconds / 60)} นาที</td>
+          <td class="p-2 text-center text-[#004b93] font-bold">${data.queryCount}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Training Modal
+    function openTrainingModal() {
+      document.getElementById('aiTrainingDirectivesInput').value = customAiDirectives;
+      document.getElementById('trainingModal').classList.remove('hidden');
+    }
+    function closeTrainingModal() {
+      document.getElementById('trainingModal').classList.add('hidden');
+    }
+    function saveAiTrainingDirectives() {
+      customAiDirectives = document.getElementById('aiTrainingDirectivesInput').value.trim();
+      closeTrainingModal();
+    }
+
+    // Helper Functions
+    function copyToClipboardText(text, btn) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      const origText = btn.innerHTML;
+      btn.innerHTML = `<i data-lucide="check" class="w-3 h-3 text-emerald-600"></i><span>คัดลอกแล้ว</span>`;
+      lucide.createIcons();
+      setTimeout(() => {
+        btn.innerHTML = origText;
+        lucide.createIcons();
+      }, 1500);
+    }
+
+    function refreshSheetData() {
+      fetchAllowedEmailsFromSheet();
+      renderQuickProductsList();
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+      });
+    }
+
+    function startHeartbeat() {
+      setInterval(() => {
+        if (currentUser && usageLogs[currentUser.email]) {
+          usageLogs[currentUser.email].activeSeconds += 10;
+        }
+      }, 10000);
+    }
+  </script>
+</body>
+</html>
